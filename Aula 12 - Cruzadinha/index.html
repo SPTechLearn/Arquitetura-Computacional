@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=VT323&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      z-index: 0;
+      position: relative;
+      font-family: 'Poppins';
+      outline: none;
+      border: none;
+      font-size: 1.1em;
+    }
+
+
+    section {
+      display: flex;
+      height: 85vh;
+      align-items: center;
+      width: 95%;
+      margin: auto;
+      background-color: #fff;
+
+    }
+
+    .cruzadinha {
+      display: grid;
+      grid-template-columns: repeat(18, 1fr);
+      grid-template-rows: repeat(19, 1fr);
+      width: max-content;
+      flex: 1;
+    }
+
+
+
+    header {
+      width: 100%;
+      padding: 20px;
+
+    }
+
+    .container {
+      width: 60%;
+      display: flex;
+      margin: auto;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .container button {
+      width: 250px;
+      padding: 10px;
+      font-size: 0.5em;
+      background-color: #ecbe13;
+      color: #222;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .hearts p {
+      font-size: 0.6em;
+
+    }
+
+    .hearts {
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+    }
+
+    .hearts img {
+      width: 30px;
+    }
+
+    .cruzadinha input {
+      width: 100%;
+      height: 30px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .cruzadinha input::-webkit-input-placeholder {
+      text-align: center;
+      color: #046d8b;
+      font-weight: bold;
+    }
+
+    .cruzadinha .active {
+      background-color: #ecbe13;
+    }
+
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      row-gap: 20px;
+    }
+
+    .perguntas {
+      display: flex;
+      overflow-y: scroll;
+      height: 80%;
+      row-gap: 20px;
+      flex: 1;
+      justify-content: space-around;
+
+    }
+
+    .card {
+      font-size: 0.6em;
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      height: max-content;
+      padding: 15px;
+      background-color: #046d8b;
+      color: #fff;
+      width: 450px;
+      border-radius: 10px;
+      margin: auto;
+    }
+
+    .gameover {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      color: #fff;
+      display: none;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .gameover.active {
+      display: flex;
+    }
+
+    .content-text {
+      width: 60%;
+      text-align: center;
+      margin: auto;
+    }
+
+    .content-text h2 {
+      font-size: 3em;
+      font-family: 'VT323', monospace;
+      letter-spacing: 30px;
+      margin-bottom: 10px;
+    }
+
+    .content-text p {
+      font-family: 'VT323', monospace;
+      letter-spacing: 10px;
+      margin-bottom: 40px;
+    }
+
+    .content-text button {
+      padding: 15px 30px;
+      font-family: 'VT323', monospace;
+      background-color: #ecbe13;
+      cursor: pointer;
+    }
+
+    .inicio {
+      top: 0;
+      left: 0;
+      display: flex;
+      width: 100%;
+      position: fixed;
+      height: 100vh;
+      background-color: #046d8b;
+      color: #fff;
+      z-index: 999;
+
+
+    }
+
+    .inicio.remove {
+      opacity: 0;
+      z-index: -999999;
+      display: none;
+      transition: 1s;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      row-gap: 20px;
+      color: #ecbe13;
+    }
+
+    .campo input {
+      width: 40%;
+      border-radius: 10px;
+      height: 60px;
+      padding: 10px;
+      margin: auto;
+      text-align: center;
+      font-size: 1em;
+    }
+
+    .campo input:placeholder-shown {
+      font-size: 0.6em;
+    }
+
+    .campo button {
+      width: max-content;
+      margin: auto;
+      transition: 0.7s;
+    }
+
+    .campo button:hover {
+      transform: scale(1.2);
+      transition: 0.7s;
+    }
+  </style>
+
+  <title>CRUZADINHA</title>
+</head>
+
+<body>
+
+  <header>
+    <div class="container">
+      <div>
+        <h2>Olá, <span id="nomeTela"></span></h2>
+        <div class="hearts">
+          <p>Você tem: </p> <span id="heart"></span>
+        </div>
+      </div>
+      <div>
+        <button onclick="verificarResposta()">VERIFICAR RESPOSTA</button>
+        <button onclick="criarCruzadinha()">REFAZER CRUZADINHA</button>
+      </div>
+    </div>
+  </header>
+  <section>
+    <div class="inicio">
+      <div class="content-text">
+        <p>Pronto para cumprir o desafio?</p>
+        <p>Você tem 3 chances para realizar uma cruzadinha com 15 palavras que estão no contexto de arquitetura
+          computacional após perder todas as suas vidas o jogo é reiniciado e você começa tudo novamente.</p>
+        <div class="campo">
+          <label for="">INFORME O SEU NOME</label>
+          <input type="text" placeholder="Informe apenas o primeiro e o segundo nome">
+          <button onclick="criarCruzadinha()">Começar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cruzadinha">
+      <input type="text"><input type="text"><input type="text"><input type="text">
+      <input type="text"><input type="text"><input type="text"><input type="text">
+      <input type="text"><input type="text"><input type="text"><input type="text">
+      <input type="text"><input type="text"><input type="text" placeholder="14"><input type="text">
+      <input type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input tye="text"><input type="text" placeholder="16"><input type="text"><input type="text"
+        placeholder="7"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text" placeholder="13"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input type="text"
+        placeholder="5"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text" placeholder="9"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text" placeholder="3"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text" placeholder="10"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text" placeholder="11"><input type="text"><input type="text"><input type="text"><input
+        type="text" placeholder="1"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text" placeholder="15"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text" placeholder="4"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input type="text"
+        placeholder="2"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text" placeholder="12"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text" placeholder="8"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text" placeholder="6"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text"><input type="text"><input type="text"><input type="text"><input
+        type="text"><input type="text">
+    </div>
+
+    <div class="perguntas">
+
+      <div class="cards">
+        <div class="card">
+          <p> 1 - "Cérebro" do computador </p>
+        </div>
+        <div class="card">
+          <p> 2 - Responsável por operações matemáticas e booleanas </p>
+        </div>
+        <div class="card">
+          <p> 3 Armazena os dados da CPU</p>
+        </div>
+        <div class="card">
+          <p> 4 - Memória interna principal </p>
+        </div>
+        <div class="card">
+          <p> 5 - Memória interna de leitura </p>
+        </div>
+        <div class="card">
+          <p> 6 - Pode ser gravada, apagada e regravada</p>
+        </div>
+        <div class="card">
+          <p> 7 - Muito presente em SSD</p>
+        </div>
+        <div class="card">
+          <p> 8 - Método que ignora a CPU </p>
+        </div>
+        <div class="card">
+          <p> 9 - Processador mais comprado da atualidade </p>
+        </div>
+        <div class="card">
+          <p> 10 - Processador mais famoso da atualidade</p>
+        </div>
+        <div class="card">
+          <p> 11 - Usa dois núcleos </p>
+        </div>
+        <div class="card">
+          <p> 12 - Usa quatro núcleos </p>
+        </div>
+        <div class="card">
+          <p> 13 - Memória auxiliar </p>
+        </div>
+        <div class="card">
+          <p> 14 - Entrada de controle de muitos circuitos integrados </p>
+        </div>
+        <div class="card">
+          <p> 15 - Barramento usado por uma CPU</p>
+        </div>
+
+        <div class="card">
+          <p> 16 - Conector que promove transferência de dados </p>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="gameover">
+      <div class="content-text">
+        <h2>GAME OVER</h2>
+        <p>TENTAR NOVAMENTE?</p>
+        <button onclick="criarCruzadinha()">Sim</button>
+        <button onclick="location.reload()">Não</button>
+      </div>
+    </div>
+  </section>
+
+</body>
+
+</html>
+<script>
+
+
+  const repostaCruzadinha = [
+    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', 'C', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', 'H', '', '', ''],
+    ['', '', '', '', '', '', '', 'D', '', 'F', '', '', '', '', 'I', '', '', ''],
+    ['', '', '', 'M', '', '', '', 'A', '', 'L', '', 'R', '', '', 'P', '', '', ''],
+    ['', '', 'R', 'E', 'G', 'I', 'S', 'T', 'R', 'A', 'D', 'O', 'R', 'E', 'S', '', '', ''],
+    ['', '', '', 'M', '', '5', '', 'A', '', 'S', '', 'M', '', '', 'E', '', '', ''],
+    ['', '', '', 'O', '', '', '', 'B', '', 'H', '', '', '', '', 'L', '', '', ''],
+    ['', '', '', 'R', '', '', '', 'U', '', '', '', '', '', '', 'E', '', '', ''],
+    ['', '', '', 'I', '7', '', '', 'S', '', '', '', '', '', '', 'C', 'P', 'U', ''],
+    ['', '', '', 'A', '', '', '', '', '', 'D', '', '', '', '', 'T', '', '', ''],
+    ['', '', 'A', 'D', 'R', 'E', 'S', 'S', 'B', 'U', 'S', '', '', '', '', '', '', ''],
+    ['', '', '', 'E', '', '', '', '', '', 'A', '', '', '', '', '', '', '', ''],
+    ['', 'R', 'A', 'M', '', '', '', '', '', 'L', '', '', '', '', '', '', '', ''],
+    ['', '', '', 'A', '', 'Q', 'U', 'A', 'D', 'C', 'O', 'R', 'E', '', '', '', '', ''],
+    ['', '', '', 'S', '', '', 'L', '', '', 'O', '', '', '', '', '', '', '', ''],
+    ['', '', '', 'S', '', '', 'A', '', '', 'R', '', '', '', '', '', '', '', ''],
+    ['', 'D', 'M', 'A', '', '', '', '', '', 'E', 'P', 'R', 'O', 'M', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+  ]
+
+
+  const cruzadinhaUsuario = [[]];
+
+  let vidasUsuario = 3;
+  function contabilizarVidas() {
+    let divGameOver = document.querySelector(".gameover");
+    heart.innerHTML = "";
+    for (let i = 1; i <= vidasUsuario; i++) {
+      heart.innerHTML += "<img src='https://media.tenor.com/a0tfh19WVxQAAAAM/heart.gif'>";
+    }
+    if (vidasUsuario < 1) {
+      divGameOver.classList.add("active");
+    }
+  }
+
+  function criarCruzadinha() {
+    vidasUsuario = 3;
+    contabilizarVidas()
+    const telaInicio = document.querySelector(".inicio");
+    let divGameOver = document.querySelector(".gameover");
+    const nomeUsuario = document.querySelector(".inicio input");
+    nomeTela.innerHTML = nomeUsuario.value;
+
+    telaInicio.classList.add("remove");
+    divGameOver.classList.remove("active");
+    let auxiliar = 0;
+    let estrutura = "";
+    for (let i = 0; i < 342; i++) {
+      if (i % 18 == 0 && i > 0) {
+        auxiliar++;
+        cruzadinhaUsuario.push([]);
+        cruzadinhaUsuario[auxiliar].push(document.querySelectorAll(".cruzadinha input")[i]);
+      }
+      else {
+        cruzadinhaUsuario[auxiliar].push(document.querySelectorAll(".cruzadinha input")[i]);
+      }
+    }
+
+    for (let linhas = 0; linhas < cruzadinhaUsuario.length; linhas++) {
+      for (let coluna = 0; coluna < cruzadinhaUsuario[linhas].length; coluna++) {
+        // cruzadinhaUsuario[linhas][coluna].value = repostaCruzadinha[linhas][coluna];
+        cruzadinhaUsuario[linhas][coluna].value = "";
+        cruzadinhaUsuario[linhas][coluna].setAttribute("maxlength", "1");
+        if (repostaCruzadinha[linhas][coluna] == "") {
+          cruzadinhaUsuario[linhas][coluna].classList.add("active");
+          cruzadinhaUsuario[linhas][coluna].setAttribute("disabled", "")
+
+        }
+
+      }
+    }
+  }
+
+
+  function verificarResposta() {
+    let validacao = true;
+    for (let linha = 0; linha < cruzadinhaUsuario.length; linha++) {
+      for (let coluna = 0; coluna < cruzadinhaUsuario[linha].length; coluna++) {
+        if (repostaCruzadinha[linha][coluna] != "") {
+          if (repostaCruzadinha[linha][coluna] != cruzadinhaUsuario[linha][coluna].value.toUpperCase()) {
+            console.log(repostaCruzadinha[linha][coluna], cruzadinhaUsuario[linha][coluna].value)
+            validacao = false;
+            break
+          };
+        }
+        if (!validacao) {
+          break
+        }
+      }
+    }
+    if (validacao) {
+      alert("PARABÉNS VOCÊ COMPLETOU A CRUZADINHA");
+    }
+    else {
+      alert("QUE PENA, VOCÊ ERROU. TENTE NOVAMENTE");
+      vidasUsuario--
+      contabilizarVidas()
+    }
+  }
+
+
+</script>
+</body>
+
+</html>
